@@ -6,14 +6,17 @@
     # Set the working directory inside the container
     WORKDIR /app
     
-    # Copy only the pom.xml first to download dependencies and leverage Docker caching.
-    # If pom.xml doesn't change, this step is cached.
+    # The build context error means Docker is failing to see files in the root folder. 
+    # We explicitly copy the required root files first.
     COPY pom.xml .
+    COPY mvnw .
+    COPY .mvn .mvn
+    
+    # Run the dependency download step using the cached pom.xml
     RUN mvn dependency:go-offline -B
     
-    # Copy all remaining project files (including src, mvnw, and .mvn) 
-    # The presence of .dockerignore prevents the 'target/' folder from being copied.
-    COPY . .
+    # Copy the source code (the 'src' folder) 
+    COPY src src
     
     # Run the package command to compile the code and build the final JAR
     # The resulting JAR will be at /app/target/your-app-name.jar
@@ -27,10 +30,8 @@
     # Set the working directory for the runtime stage
     WORKDIR /app
     
-    # Copy the generated JAR from the build stage. We use /app/target/ since we set WORKDIR /app 
-    # in the build stage.
-    # NOTE: The JAR name is csi_backend-0.0.1-SNAPSHOT.jar from your target folder structure.
-    # We will keep the wildcard for flexibility, but be aware of the exact name.
+    # Copy the generated JAR from the build stage.
+    # We will keep the wildcard for flexibility, but be aware of the exact name (csi_backend-0.0.1-SNAPSHOT.jar).
     COPY --from=build /app/target/*.jar demo.jar
     
     # Expose the application port
