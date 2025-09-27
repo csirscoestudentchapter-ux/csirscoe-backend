@@ -1,0 +1,10 @@
+# Ignore backup/temp files
+*~
+# Ignore editor temporary files
+*.swp
+*.swo
+# Ignore hidden system files
+.DS_Store
+Thumbs.db
+# Ignore node_modules or other unnecessary folders
+node_modules
