@@ -4,7 +4,7 @@ COPY . .
 # COPY pom.xml mvnw ./
 # COPY .mvn .mvn
 # COPY src ./src
-RUN mvn clean package -DskipTests 
+RUN mvn -B -DskipTests package
 
 # runtime stage
 FROM eclipse-temurin:17-jdk-jammy
