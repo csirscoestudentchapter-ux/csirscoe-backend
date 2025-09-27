@@ -1,9 +1,8 @@
 # build stage
 FROM maven:3.9.4-eclipse-temurin-17 AS build
-COPY . .
-# COPY pom.xml mvnw ./
-# COPY .mvn .mvn
-# COPY src ./src
+ COPY pom.xml mvnw ./
+COPY .mvn .mvn
+COPY src ./src
 RUN mvn -B -DskipTests package
 
 # runtime stage
