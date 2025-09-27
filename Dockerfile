@@ -1,8 +1,8 @@
 # --------------------
 # 1. BUILD STAGE (Builds the JAR file)
 # --------------------
-# Use a specific, stable Maven image with Java 17
-FROM maven:3.9.4-eclipse-temurin-17 AS build
+# Use a specific, stable Maven image with Java 21
+FROM maven:3.9.4-eclipse-temurin-21 AS build
 
 # Set the working directory inside the container for all subsequent steps
 WORKDIR /app
@@ -27,8 +27,8 @@ RUN mvn clean package -DskipTests
 # --------------------
 # 2. RUNTIME STAGE (Runs the application using a smaller base image)
 # --------------------
-# Use a smaller, secure base image for the final deployment
-FROM eclipse-temurin:17-alpine
+# Use a smaller, secure base image for the final deployment with Java 21 JRE
+FROM eclipse-temurin:21-alpine
 
 # Set the working directory for the runtime stage
 WORKDIR /app
