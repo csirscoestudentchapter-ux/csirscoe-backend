@@ -6,18 +6,14 @@
     # Set the working directory inside the container
     WORKDIR /app
     
-    # The .dockerignore file ensures that target/ and other unnecessary files are not copied.
-    # Copy necessary Maven wrapper files
-    COPY mvnw .
-    COPY .mvn .mvn
-    
     # Copy only the pom.xml first to download dependencies and leverage Docker caching.
     # If pom.xml doesn't change, this step is cached.
     COPY pom.xml .
     RUN mvn dependency:go-offline -B
     
-    # Copy all the remaining source code (src directory, README, etc.)
-    COPY src src
+    # Copy all remaining project files (including src, mvnw, and .mvn) 
+    # The presence of .dockerignore prevents the 'target/' folder from being copied.
+    COPY . .
     
     # Run the package command to compile the code and build the final JAR
     # The resulting JAR will be at /app/target/your-app-name.jar
