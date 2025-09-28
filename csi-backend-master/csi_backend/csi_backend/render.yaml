@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: csi-backend
+    env: java
+    buildCommand: mvn clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: DATABASE_HOST
+        value: aws-1-ap-southeast-1.pooler.supabase.com
+      - key: DATABASE_PORT
+        value: 5432
+      - key: DATABASE_NAME
+        value: postgres
+      - key: DATABASE_USER
+        value: postgres.qzmnsrankbpqnuaxoyhp
+      - key: DATABASE_PASSWORD
+        value: Mayur@7666
+      - key: EMAIL_USERNAME
+        value: contactus.csirscoe@gmail.com
+      - key: EMAIL_PASSWORD
+        value: lyizdksbwyoidroq
+      - key: PORT
+        value: 8080

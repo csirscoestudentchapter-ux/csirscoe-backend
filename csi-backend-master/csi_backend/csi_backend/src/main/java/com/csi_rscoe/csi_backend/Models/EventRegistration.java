@@ -29,11 +29,11 @@ public class EventRegistration {
     private String message;
 
     @Lob
-    @Column(columnDefinition = "BLOB")
+    @Column(columnDefinition = "BYTEA")
     private byte[] receiptImage;
 
     @Lob
-    @Column(columnDefinition = "BLOB")
+    @Column(columnDefinition = "BYTEA")
     private byte[] qrCodeImage;
 
     @Column(length = 8000)
