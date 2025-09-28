@@ -14,10 +14,10 @@ services:
       - key: DATABASE_USER
         value: postgres.qzmnsrankbpqnuaxoyhp
       - key: DATABASE_PASSWORD
-        value: Mayur@7666
+        value: ${DATABASE_PASSWORD}
       - key: EMAIL_USERNAME
         value: contactus.csirscoe@gmail.com
       - key: EMAIL_PASSWORD
-        value: lyizdksbwyoidroq
+        value: ${EMAIL_PASSWORD}
       - key: PORT
         value: 8080
