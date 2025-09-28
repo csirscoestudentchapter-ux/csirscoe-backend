@@ -43,9 +43,9 @@
    DATABASE_PORT=5432
    DATABASE_NAME=postgres
    DATABASE_USER=postgres.qzmnsrankbpqnuaxoyhp
-   DATABASE_PASSWORD=Mayur@7666
+   DATABASE_PASSWORD=your-actual-database-password
    EMAIL_USERNAME=contactus.csirscoe@gmail.com
-   EMAIL_PASSWORD=lyizdksbwyoidroq
+   EMAIL_PASSWORD=your-actual-email-password
    PORT=8080
    ```
 
@@ -105,9 +105,9 @@ DATABASE_HOST=aws-1-ap-southeast-1.pooler.supabase.com
 DATABASE_PORT=5432
 DATABASE_NAME=postgres
 DATABASE_USER=postgres.qzmnsrankbpqnuaxoyhp
-DATABASE_PASSWORD=Mayur@7666
+DATABASE_PASSWORD=your-actual-database-password
 EMAIL_USERNAME=contactus.csirscoe@gmail.com
-EMAIL_PASSWORD=lyizdksbwyoidroq
+EMAIL_PASSWORD=your-actual-email-password
 PORT=8080
 ```
 
