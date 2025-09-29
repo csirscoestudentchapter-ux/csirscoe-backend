@@ -16,7 +16,7 @@ import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/public")
-@CrossOrigin(origins = {"http://localhost:5173"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://csirscoe.netlify.app", "https://csi-rscoe-nexus-main.netlify.app", "https://csi-rscoe.vercel.app"})
 public class PublicContentController {
 
     @Autowired private EventRepository eventRepository;

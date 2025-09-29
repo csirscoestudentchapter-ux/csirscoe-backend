@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 @RestController
 @RequestMapping("/api/public/events")
-@CrossOrigin(origins = { "http://localhost:5173" })
+@CrossOrigin(origins = { "http://localhost:5173", "https://csirscoe.netlify.app", "https://csi-rscoe-nexus-main.netlify.app", "https://csi-rscoe.vercel.app" })
 public class EventRegistrationController {
 
     @Autowired
