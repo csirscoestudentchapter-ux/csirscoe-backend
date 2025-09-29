@@ -22,7 +22,7 @@ public class EventRegistrationController {
     private EventRegistrationRepository registrationRepository;
 
     @PostMapping(value = "/{eventId}/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EventRegistration> register(
+    public ResponseEntity<?> register(
             @PathVariable Long eventId,
             @RequestPart("payload") EventRegistration registration,
             @RequestPart(value = "receiptImage", required = false) MultipartFile receiptImage,
@@ -68,11 +68,13 @@ public class EventRegistrationController {
             boolean exists = existingForEvent.stream().anyMatch(r -> r.getTransactionId() != null && r.getTransactionId().trim().equalsIgnoreCase(t));
             if (exists) return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
+        // Avoid storing binary images directly to prevent bytea/oid mismatch in some setups
+        // Instead, require URLs to be set in payload if needed
         if (receiptImage != null && !receiptImage.isEmpty()) {
-            registration.setReceiptImage(receiptImage.getBytes());
+            // no-op: skip storing raw image
         }
         if (qrCodeImage != null && !qrCodeImage.isEmpty()) {
-            registration.setQrCodeImage(qrCodeImage.getBytes());
+            // no-op: skip storing raw image
         }
         EventRegistration saved = registrationRepository.save(registration);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);

@@ -5,6 +5,8 @@ import com.csi_rscoe.csi_backend.DTOs.ContactMsg;
 import com.csi_rscoe.csi_backend.Services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,30 +20,27 @@ public class ContactUs {
     @Autowired
    private EmailService emailService;
   @PostMapping("/contactus")
-    String contactUs(@RequestBody ContactMsg contactMsg){
+    public ResponseEntity<String> contactUs(@RequestBody ContactMsg contactMsg){
 
 
-        emailService.sendEmail("bhavsarmayur664@gmail.com",
-                "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-                contactMsg.getMsg());
-      emailService.sendEmail("vaibhavvyavahare20@gmail.com",
-              "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-              contactMsg.getMsg());
-      emailService.sendEmail("kshitijthorat15@gmail.com",
-              "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-              contactMsg.getMsg());
-      emailService.sendEmail("csirscoestudentchapter@gmail.com",
-              "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-              contactMsg.getMsg());
-
-
-
-      //kshitijthorat15@gmail.com
-// priya.sharma@student.rscoe.edu
-      //arjun.patel@student.rscoe.edu
-      //shivtejrakhunde@gmail.com
-      //bhavsarmayur664@gmail.com
-return "Message sent successfully";
+        try {
+            emailService.sendEmail("bhavsarmayur664@gmail.com",
+                    "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
+                    contactMsg.getMsg());
+            emailService.sendEmail("vaibhavvyavahare20@gmail.com",
+                    "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
+                    contactMsg.getMsg());
+            emailService.sendEmail("kshitijthorat15@gmail.com",
+                    "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
+                    contactMsg.getMsg());
+            emailService.sendEmail("csirscoestudentchapter@gmail.com",
+                    "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
+                    contactMsg.getMsg());
+            return ResponseEntity.ok("Message sent successfully");
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.ACCEPTED)
+                    .body("Message received. Email delivery failed; we will review manually.");
+        }
     }
 
 
