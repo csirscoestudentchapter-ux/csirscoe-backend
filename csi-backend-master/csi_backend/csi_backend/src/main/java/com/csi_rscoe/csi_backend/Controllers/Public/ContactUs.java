@@ -24,18 +24,22 @@ public class ContactUs {
 
 
         try {
-            emailService.sendEmail("bhavsarmayur664@gmail.com",
+            emailService.sendEmailWithReplyTo("bhavsarmayur664@gmail.com",
                     "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-                    contactMsg.getMsg());
-            emailService.sendEmail("vaibhavvyavahare20@gmail.com",
+                    contactMsg.getMsg(),
+                    contactMsg.getEmail());
+            emailService.sendEmailWithReplyTo("vaibhavvyavahare20@gmail.com",
                     "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-                    contactMsg.getMsg());
-            emailService.sendEmail("kshitijthorat15@gmail.com",
+                    contactMsg.getMsg(),
+                    contactMsg.getEmail());
+            emailService.sendEmailWithReplyTo("kshitijthorat15@gmail.com",
                     "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-                    contactMsg.getMsg());
-            emailService.sendEmail("csirscoestudentchapter@gmail.com",
+                    contactMsg.getMsg(),
+                    contactMsg.getEmail());
+            emailService.sendEmailWithReplyTo("csirscoestudentchapter@gmail.com",
                     "New Contact Us Message from "+contactMsg.getName()+"  email:"+contactMsg.getEmail(),
-                    contactMsg.getMsg());
+                    contactMsg.getMsg(),
+                    contactMsg.getEmail());
             return ResponseEntity.ok("Message sent successfully");
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.ACCEPTED)
