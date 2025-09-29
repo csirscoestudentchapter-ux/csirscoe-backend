@@ -68,14 +68,9 @@ public class EventRegistrationController {
             boolean exists = existingForEvent.stream().anyMatch(r -> r.getTransactionId() != null && r.getTransactionId().trim().equalsIgnoreCase(t));
             if (exists) return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
-        // Avoid storing binary images directly to prevent bytea/oid mismatch in some setups
-        // Instead, require URLs to be set in payload if needed
-        if (receiptImage != null && !receiptImage.isEmpty()) {
-            // no-op: skip storing raw image
-        }
-        if (qrCodeImage != null && !qrCodeImage.isEmpty()) {
-            // no-op: skip storing raw image
-        }
+        // Explicitly clear binary fields to avoid bytea/oid issues
+        registration.setReceiptImage(null);
+        registration.setQrCodeImage(null);
         EventRegistration saved = registrationRepository.save(registration);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
