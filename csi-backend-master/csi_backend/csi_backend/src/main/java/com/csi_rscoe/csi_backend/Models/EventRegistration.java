@@ -28,12 +28,10 @@ public class EventRegistration {
     private String qrCodeUrl; // optional QR used
     private String message;
 
-    @Lob
-    @Column(columnDefinition = "BYTEA")
+    @Transient
     private byte[] receiptImage;
 
-    @Lob
-    @Column(columnDefinition = "BYTEA")
+    @Transient
     private byte[] qrCodeImage;
 
     @Column(length = 8000)
