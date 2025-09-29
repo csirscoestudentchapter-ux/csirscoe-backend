@@ -20,6 +20,9 @@ public class EmailService {
     @Value("${spring.mail.username:}")
     private String fromAddress;
 
+    @Value("${app.email.enabled:false}")
+    private boolean emailEnabled;
+
     public void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -29,6 +32,10 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
 
+        if (!emailEnabled) {
+            log.info("Email disabled by flag; skipping send to={} subject={}", to, subject);
+            return;
+        }
         try {
             mailSender.send(message);
             log.info("Email sent successfully to={} subject={} replyTo={} from={}", to, subject, message.getReplyTo(), message.getFrom());
@@ -50,6 +57,10 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
 
+        if (!emailEnabled) {
+            log.info("Email disabled by flag; skipping send to={} subject={}", to, subject);
+            return;
+        }
         try {
             mailSender.send(message);
             log.info("Email sent successfully to={} subject={} replyTo={} from={}", to, subject, message.getReplyTo(), message.getFrom());
