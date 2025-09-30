@@ -95,11 +95,12 @@ public class EventRegistrationController {
             if (ev != null) {
                 tableName = EventRegistration.getTableNameForEvent(ev.getTitle());
             }
-            // Ensure table exists (PostgreSQL)
-            entityManager.createNativeQuery("CREATE TABLE IF NOT EXISTS " + tableName + " (LIKE event_registrations INCLUDING ALL)").executeUpdate();
+            // Ensure table exists in public schema (PostgreSQL)
+            String fqtn = "public." + tableName;
+            entityManager.createNativeQuery("CREATE TABLE IF NOT EXISTS " + fqtn + " (LIKE event_registrations INCLUDING ALL)").executeUpdate();
             // Insert using native query to target dynamic table
             entityManager.createNativeQuery(
-                "INSERT INTO " + tableName + " (event_id, name, team_name, member_names, email, phone, department, college, year, rbt_no, transaction_id, transaction_details, receipt_url, message, custom_fields_json, created_at, team_size, whatsapp_group_url) " +
+                "INSERT INTO " + fqtn + " (event_id, name, team_name, member_names, email, phone, department, college, year, rbt_no, transaction_id, transaction_details, receipt_url, message, custom_fields_json, created_at, team_size, whatsapp_group_url) " +
                 "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, now(), ?16, ?17)")
                 .setParameter(1, registration.getEventId())
                 .setParameter(2, registration.getName())
