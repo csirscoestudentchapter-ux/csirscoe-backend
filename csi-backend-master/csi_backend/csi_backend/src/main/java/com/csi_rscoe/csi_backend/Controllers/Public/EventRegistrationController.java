@@ -3,6 +3,10 @@ package com.csi_rscoe.csi_backend.Controllers.Public;
 import com.csi_rscoe.csi_backend.Models.EventRegistration;
 import com.csi_rscoe.csi_backend.Repositories.EventRegistrationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.csi_rscoe.csi_backend.Models.Event;
+import com.csi_rscoe.csi_backend.Repositories.EventRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +24,12 @@ public class EventRegistrationController {
 
     @Autowired
     private EventRegistrationRepository registrationRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
 
     @PostMapping(value = "/{eventId}/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(
@@ -78,6 +88,38 @@ public class EventRegistrationController {
             for (String p : parts) { if (p != null && !p.trim().isEmpty()) count++; }
             registration.setTeamSize(count == 0 ? null : count);
         }
+        // Persist into per-event table
+        String tableName = "event_registrations";
+        Event ev = eventRepository.findById(eventId).orElse(null);
+        if (ev != null) {
+            tableName = EventRegistration.getTableNameForEvent(ev.getTitle());
+        }
+        // Ensure table exists (PostgreSQL)
+        entityManager.createNativeQuery("CREATE TABLE IF NOT EXISTS " + tableName + " (LIKE event_registrations INCLUDING ALL)").executeUpdate();
+        // Insert using native query to target dynamic table
+        entityManager.createNativeQuery(
+            "INSERT INTO " + tableName + " (event_id, name, team_name, member_names, email, phone, department, college, year, rbt_no, transaction_id, transaction_details, receipt_url, message, custom_fields_json, created_at, team_size, whatsapp_group_url) " +
+            "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, now(), ?16, ?17)")
+            .setParameter(1, registration.getEventId())
+            .setParameter(2, registration.getName())
+            .setParameter(3, registration.getTeamName())
+            .setParameter(4, registration.getMemberNames())
+            .setParameter(5, registration.getEmail())
+            .setParameter(6, registration.getPhone())
+            .setParameter(7, registration.getDepartment())
+            .setParameter(8, registration.getCollege())
+            .setParameter(9, registration.getYear())
+            .setParameter(10, registration.getRbtNo())
+            .setParameter(11, registration.getTransactionId())
+            .setParameter(12, registration.getTransactionDetails())
+            .setParameter(13, registration.getReceiptUrl())
+            .setParameter(14, registration.getMessage())
+            .setParameter(15, registration.getCustomFieldsJson())
+            .setParameter(16, registration.getTeamSize())
+            .setParameter(17, registration.getWhatsappGroupUrl())
+            .executeUpdate();
+
+        // Save to base repository as well for admin list APIs
         EventRegistration saved = registrationRepository.save(registration);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }

@@ -25,7 +25,8 @@ public class EventRegistration {
     private String transactionId;
     private String transactionDetails;
     private String receiptUrl; // screenshot of payment/receipt
-    private String qrCodeUrl; // optional QR used
+    @Transient
+    private String qrCodeUrl; // no longer persisted
     private String message;
     private Integer teamSize;
     private String whatsappGroupUrl;
@@ -114,13 +115,8 @@ public class EventRegistration {
         this.receiptUrl = receiptUrl;
     }
 
-    public String getQrCodeUrl() {
-        return qrCodeUrl;
-    }
-
-    public void setQrCodeUrl(String qrCodeUrl) {
-        this.qrCodeUrl = qrCodeUrl;
-    }
+    public String getQrCodeUrl() { return qrCodeUrl; }
+    public void setQrCodeUrl(String qrCodeUrl) { this.qrCodeUrl = qrCodeUrl; }
 
     public String getMessage() {
         return message;
