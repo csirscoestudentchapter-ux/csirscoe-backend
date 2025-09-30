@@ -124,8 +124,9 @@ public class EventRegistrationController {
             // ignore per-event table issues; base save below still ensures success
         }
 
-        // Return the payload (id not from dynamic table). We avoid base-table save to prevent duplicates.
-        return ResponseEntity.status(HttpStatus.CREATED).body(registration);
+        // Save to base repository only (single table as earlier)
+        EventRegistration saved = registrationRepository.save(registration);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     @GetMapping(value = "/{eventId}/team-available", produces = MediaType.APPLICATION_JSON_VALUE)
