@@ -3,6 +3,9 @@ package com.csi_rscoe.csi_backend.Controllers.Admin;
 import com.csi_rscoe.csi_backend.Models.Event;
 import com.csi_rscoe.csi_backend.Repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,8 @@ public class AdminEventController {
 
     @Autowired
     private EventRepository eventRepository;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Event> getAll() {
@@ -76,9 +81,17 @@ public class AdminEventController {
     @GetMapping(value = "/{id}/registration-schema", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> getRegistrationSchema(@PathVariable Long id) {
         return eventRepository.findById(id)
-                .map(e -> ResponseEntity.ok()
-                        .body(e.getRegistrationFieldsJson() != null ? e.getRegistrationFieldsJson()
-                                : e.getRegistrationSchemaJson()))
+                .map(e -> {
+                    String raw = e.getRegistrationFieldsJson() != null ? e.getRegistrationFieldsJson()
+                            : e.getRegistrationSchemaJson();
+                    try {
+                        ArrayNode arr = ensureArray(raw);
+                        ensureTeamFields(arr);
+                        return ResponseEntity.ok().body(objectMapper.writeValueAsString(arr));
+                    } catch (Exception ex) {
+                        return ResponseEntity.ok().body(raw);
+                    }
+                })
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -89,7 +102,13 @@ public class AdminEventController {
             return ResponseEntity.notFound().build();
         }
         Event e = existing.get();
-        e.setRegistrationFieldsJson(schemaJson);
+        try {
+            ArrayNode arr = ensureArray(schemaJson);
+            ensureTeamFields(arr);
+            e.setRegistrationFieldsJson(objectMapper.writeValueAsString(arr));
+        } catch (Exception ex) {
+            e.setRegistrationFieldsJson(schemaJson);
+        }
         eventRepository.save(e);
         return ResponseEntity.noContent().build();
     }
@@ -97,5 +116,49 @@ public class AdminEventController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    private ArrayNode ensureArray(String json) {
+        ArrayNode arr = objectMapper.createArrayNode();
+        try {
+            if (json != null && !json.isBlank()) {
+                if (objectMapper.readTree(json).isArray()) {
+                    arr = (ArrayNode) objectMapper.readTree(json);
+                }
+            }
+        } catch (Exception ignored) {}
+        return arr;
+    }
+
+    private void ensureTeamFields(ArrayNode arr) {
+        boolean hasTeamSize = false;
+        boolean hasLeaderReq = false;
+        for (int i = 0; i < arr.size(); i++) {
+            if (!arr.get(i).isObject()) continue;
+            ObjectNode o = (ObjectNode) arr.get(i);
+            String label = o.has("label") ? o.get("label").asText("") : "";
+            if ("Required Team Size".equalsIgnoreCase(label) || "Team Size".equalsIgnoreCase(label)) {
+                hasTeamSize = true;
+            }
+            if ("Leader Required".equalsIgnoreCase(label)) {
+                hasLeaderReq = true;
+            }
+        }
+        if (!hasTeamSize) {
+            ObjectNode teamSize = objectMapper.createObjectNode();
+            teamSize.put("label", "Required Team Size");
+            teamSize.put("type", "select");
+            teamSize.put("required", false);
+            teamSize.put("options", "1,2,3,4,5,6,7,8,9,10");
+            arr.insert(0, teamSize);
+        }
+        if (!hasLeaderReq) {
+            ObjectNode leader = objectMapper.createObjectNode();
+            leader.put("label", "Leader Required");
+            leader.put("type", "select");
+            leader.put("required", false);
+            leader.put("options", "Yes,No");
+            arr.insert(1, leader);
+        }
     }
 }
