@@ -57,7 +57,7 @@ public class AdminEventRegistrationController {
                     e.setCollege((String) r[6]);
                     e.setYear((String) r[7]);
                     e.setTeamName((String) r[8]);
-                    e.setMemberNames((String) r[9]);
+                    // Deprecated: memberNames no longer used
                     e.setRbtNo((String) r[10]);
                     e.setTransactionId((String) r[11]);
                     e.setTransactionDetails((String) r[12]);
@@ -104,7 +104,7 @@ public class AdminEventRegistrationController {
         r.setCollege(updated.getCollege());
         r.setYear(updated.getYear());
         r.setTeamName(updated.getTeamName());
-        r.setMemberNames(updated.getMemberNames());
+        // Deprecated: ignore memberNames updates
         r.setRbtNo(updated.getRbtNo());
         r.setTransactionId(updated.getTransactionId());
         r.setTransactionDetails(updated.getTransactionDetails());
@@ -142,7 +142,7 @@ public class AdminEventRegistrationController {
         headers.add("Year");
         headers.add("Team Name");
         headers.add("Team Size");
-        headers.add("Member Names");
+        // Removed: Member Names (deprecated)
         headers.add("WhatsApp Group");
         headers.add("RBT No");
         headers.add("Transaction ID");
@@ -183,7 +183,7 @@ public class AdminEventRegistrationController {
 
             if (eventOpt.isPresent() && eventOpt.get().getRegistrationFieldsJson() != null && custom != null
                     && custom.isObject()) {
-                // First append fixed fields (positions 1..12) from entity
+                // First append fixed fields from entity (without deprecated Member Names)
                 row.add(escape(r.getName()));
                 row.add(escape(r.getEmail()));
                 row.add(escape(r.getPhone()));
@@ -192,14 +192,14 @@ public class AdminEventRegistrationController {
                 row.add(escape(r.getYear()));
                 row.add(escape(r.getTeamName()));
                 row.add(escape(r.getTeamSize() == null ? "" : r.getTeamSize().toString()));
-                row.add(escape(r.getMemberNames()));
                 row.add(escape(r.getWhatsappGroupUrl()));
                 row.add(escape(r.getRbtNo()));
                 row.add(escape(r.getTransactionId()));
                 row.add(escape(r.getTransactionDetails()));
                 row.add(escape(r.getMessage()));
                 // Then append dynamic custom fields
-                for (int h = 13; h < headers.size() - 1; h++) { // after fixed fields, before Payment Status
+                int fixedCount = 1 /*S.No.*/ + 13; // 13 fixed fields added above
+                for (int h = fixedCount; h < headers.size() - 1; h++) { // after fixed fields, before Payment Status
                     String label = headers.get(h);
                     String value = custom.has(label) && !custom.get(label).isNull() ? custom.get(label).asText() : "";
                     if ("Event Fee".equalsIgnoreCase(label)) {
@@ -218,7 +218,6 @@ public class AdminEventRegistrationController {
                 row.add(escape(r.getYear()));
                 row.add(escape(r.getTeamName()));
                 row.add(escape(r.getTeamSize() == null ? "" : r.getTeamSize().toString()));
-                row.add(escape(r.getMemberNames()));
                 row.add(escape(r.getWhatsappGroupUrl()));
                 row.add(escape(r.getRbtNo()));
                 row.add(escape(r.getTransactionId()));
