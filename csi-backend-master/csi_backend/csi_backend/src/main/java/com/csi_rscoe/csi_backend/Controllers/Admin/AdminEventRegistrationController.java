@@ -101,7 +101,9 @@ public class AdminEventRegistrationController {
         headers.add("College");
         headers.add("Year");
         headers.add("Team Name");
+        headers.add("Team Size");
         headers.add("Member Names");
+        headers.add("WhatsApp Group");
         headers.add("RBT No");
         headers.add("Transaction ID");
         headers.add("Transaction Details");
@@ -149,7 +151,9 @@ public class AdminEventRegistrationController {
                 row.add(escape(r.getCollege()));
                 row.add(escape(r.getYear()));
                 row.add(escape(r.getTeamName()));
+                row.add(escape(r.getTeamSize() == null ? "" : r.getTeamSize().toString()));
                 row.add(escape(r.getMemberNames()));
+                row.add(escape(r.getWhatsappGroupUrl()));
                 row.add(escape(r.getRbtNo()));
                 row.add(escape(r.getTransactionId()));
                 row.add(escape(r.getTransactionDetails()));
@@ -173,7 +177,9 @@ public class AdminEventRegistrationController {
                 row.add(escape(r.getCollege()));
                 row.add(escape(r.getYear()));
                 row.add(escape(r.getTeamName()));
+                row.add(escape(r.getTeamSize() == null ? "" : r.getTeamSize().toString()));
                 row.add(escape(r.getMemberNames()));
+                row.add(escape(r.getWhatsappGroupUrl()));
                 row.add(escape(r.getRbtNo()));
                 row.add(escape(r.getTransactionId()));
                 row.add(escape(r.getTransactionDetails()));

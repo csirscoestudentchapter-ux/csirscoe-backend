@@ -27,6 +27,8 @@ public class EventRegistration {
     private String receiptUrl; // screenshot of payment/receipt
     private String qrCodeUrl; // optional QR used
     private String message;
+    private Integer teamSize;
+    private String whatsappGroupUrl;
 
     @Transient
     private byte[] receiptImage;
@@ -199,6 +201,22 @@ public class EventRegistration {
 
     public void setTransactionDetails(String transactionDetails) {
         this.transactionDetails = transactionDetails;
+    }
+
+    public Integer getTeamSize() {
+        return teamSize;
+    }
+
+    public void setTeamSize(Integer teamSize) {
+        this.teamSize = teamSize;
+    }
+
+    public String getWhatsappGroupUrl() {
+        return whatsappGroupUrl;
+    }
+
+    public void setWhatsappGroupUrl(String whatsappGroupUrl) {
+        this.whatsappGroupUrl = whatsappGroupUrl;
     }
 
     // Helper method to get table name for specific event

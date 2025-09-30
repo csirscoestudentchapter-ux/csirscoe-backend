@@ -71,6 +71,13 @@ public class EventRegistrationController {
         // Explicitly clear binary fields to avoid bytea/oid issues
         registration.setReceiptImage(null);
         registration.setQrCodeImage(null);
+        // Normalize optional fields from custom payload
+        if (registration.getTeamSize() == null && registration.getMemberNames() != null) {
+            String[] parts = registration.getMemberNames().split(",");
+            int count = 0;
+            for (String p : parts) { if (p != null && !p.trim().isEmpty()) count++; }
+            registration.setTeamSize(count == 0 ? null : count);
+        }
         EventRegistration saved = registrationRepository.save(registration);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
