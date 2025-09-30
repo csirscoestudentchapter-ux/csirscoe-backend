@@ -123,9 +123,8 @@ public class EventRegistrationController {
             // ignore per-event table issues; base save below still ensures success
         }
 
-        // Save to base repository as well for admin list APIs
-        EventRegistration saved = registrationRepository.save(registration);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        // Return the payload (id not from dynamic table). We avoid base-table save to prevent duplicates.
+        return ResponseEntity.status(HttpStatus.CREATED).body(registration);
     }
 
     @GetMapping(value = "/{eventId}/team-available", produces = MediaType.APPLICATION_JSON_VALUE)

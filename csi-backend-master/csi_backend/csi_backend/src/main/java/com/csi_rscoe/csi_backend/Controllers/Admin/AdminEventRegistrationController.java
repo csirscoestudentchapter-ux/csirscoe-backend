@@ -7,6 +7,8 @@ import com.csi_rscoe.csi_backend.Repositories.EventRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +31,46 @@ public class AdminEventRegistrationController {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @GetMapping(value = "/{eventId}/registrations", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EventRegistration> list(@PathVariable Long eventId) {
+        // Prefer dynamic per-event table if exists; else fallback to base table
+        Optional<Event> eventOpt = eventRepository.findById(eventId);
+        if (eventOpt.isPresent()) {
+            String table = EventRegistration.getTableNameForEvent(eventOpt.get().getTitle());
+            try {
+                // Query dynamic table rows into lightweight EventRegistration objects (subset fields)
+                List<Object[]> rows = entityManager.createNativeQuery(
+                    "SELECT id, event_id, name, email, phone, department, college, year, team_name, member_names, rbt_no, transaction_id, transaction_details, message, custom_fields_json, created_at, team_size, whatsapp_group_url FROM " + table + " ORDER BY created_at DESC"
+                ).getResultList();
+                List<EventRegistration> out = new ArrayList<>();
+                for (Object[] r : rows) {
+                    EventRegistration e = new EventRegistration();
+                    e.setId(r[0] != null ? ((Number) r[0]).longValue() : null);
+                    e.setEventId(r[1] != null ? ((Number) r[1]).longValue() : null);
+                    e.setName((String) r[2]);
+                    e.setEmail((String) r[3]);
+                    e.setPhone((String) r[4]);
+                    e.setDepartment((String) r[5]);
+                    e.setCollege((String) r[6]);
+                    e.setYear((String) r[7]);
+                    e.setTeamName((String) r[8]);
+                    e.setMemberNames((String) r[9]);
+                    e.setRbtNo((String) r[10]);
+                    e.setTransactionId((String) r[11]);
+                    e.setTransactionDetails((String) r[12]);
+                    e.setMessage((String) r[13]);
+                    e.setCustomFieldsJson((String) r[14]);
+                    e.setCreatedAt((java.util.Date) r[15]);
+                    e.setTeamSize(r[16] != null ? ((Number) r[16]).intValue() : null);
+                    e.setWhatsappGroupUrl((String) r[17]);
+                    out.add(e);
+                }
+                return out;
+            } catch (Exception ignore) {}
+        }
         return registrationRepository.findByEventId(eventId);
     }
 
